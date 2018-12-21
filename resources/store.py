@@ -1,5 +1,5 @@
 from flask_restful import Resource, reqparse
-from flask_jwt import jwt_required
+from flask_jwt_extended import jwt_required
 from sqlalchemy import exc
 from models.store import StoreModel
 
@@ -8,7 +8,7 @@ class Store(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('name', type=str, required=True, help="This Field cannot be left blank!")
 
-    @jwt_required()
+    @jwt_required
     def get(self, name):
         store = StoreModel.find_by_name(name)
         if store:
@@ -39,4 +39,4 @@ class Store(Resource):
 
 class StoreList(Resource):
     def get(self):
-        return {'stores': list(map(lambda x: x.json(), StoreModel.query.all()))}
+        return {'stores': [x.json() for x in StoreModel.find_all()]}
